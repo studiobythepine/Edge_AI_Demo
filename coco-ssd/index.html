@@ -1,0 +1,205 @@
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+</head>
+
+<body>
+        <video id="video" src="./parkingVideo1.mp4" autoplay muted loop></video>
+        <div class="canvasWrapper">
+            <canvas id="overlay" width=1920 height=1080></canvas>
+            <canvas id="canvas" width=1920 height=1080></canvas>
+        </div>
+        <div id="parkingSpots" width=1920 height=1080>
+            <div id="spot1"></div>
+            <div id="spot2"></div>
+            <div id="spot3"></div>
+            <div id="spot4"></div>
+            <div id="spot5"></div>
+            <div id="spot6"></div>
+            <div id="spot7"></div>
+        </div>
+
+
+</body>
+
+<script>
+let personDensity = 0
+let carDensity = 0
+let bicycleDensity = 0
+let motorcycleDensity = 0
+let truckDensity = 0
+
+console.log(tf.getBackend());
+
+
+var overlay = document.getElementById("overlay");
+var ctxo = overlay.getContext("2d");
+
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+
+// var parkingData = document.getElementById("parkingBox");
+// var ctxP = canvas.getContext("2d");
+
+ctx.strokeStyle = "blue";
+ctx.lineWidth = 3;
+ctxo.strokeStyle = "blue";
+ctxo.lineWidth = 3;
+// ctxP.strokeStyle = "red";
+// ctxP.lineWidth = 3;
+
+const video = document.getElementById('video');
+
+let model;
+cocoSsd.load('lite_mobilenet_v2 ').then((loadedModel) => {
+  model = loadedModel;
+});
+
+//set parking area manually
+let parkingArea = {
+    x: 500,
+    y: 0,
+    width: 1920,
+    height: 200
+}
+
+// ctxP.strokeRect(0, 500, 1920, 200);
+
+
+async function runModel() {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    let tempLocation
+        model.detect(canvas,20, .35).then(predictions => {
+            console.log(predictions)
+            predictions.forEach(prediction => {
+                if(prediction.class == "car"){
+                    ctxo.strokeStyle = "blue";
+                    carDensity ++
+                } else if (prediction.class == "motorcycle" ){
+                    ctxo.strokeStyle = "red";
+                    motorcycleDensity ++
+                } else if (prediction.class == "truck"){
+                    ctxo.strokeStyle = "blue";
+                    truckDensity ++
+                } else {
+                    ctxo.strokeStyle = "black";
+                }
+                ctxo.strokeRect(prediction.bbox[0], prediction.bbox[1], prediction.bbox[2], prediction.bbox[3]);
+            })
+        });    
+
+        ctxo.clearRect(0, 0, canvas.width, canvas.height);
+        requestAnimationFrame(runModel);
+    
+}
+
+
+
+
+// setTimeout(runModel,  3000)
+</script>
+
+
+<style>
+    body{ 
+        background-color: ivory; 
+        display: flex;
+        flex-direction: column;
+    }
+    canvas{
+        position: absolute;
+    }
+    #video {
+        height: 300px;
+        width: 600px;
+        /* position: absolute; */
+    }
+    #canvasWrapper{
+        position:relative;
+    }
+    #canvas{
+        /* position: absolute; */
+        z-index: 50;
+    }
+    #overlay{
+        /* position: absolute; */
+        z-index: 100;
+    }
+
+    #parkingSpots{
+        position: relative;
+        z-index: 200;
+        height: 1080px;
+        width: 1920px;
+    }
+
+    #spot1{
+        position: absolute;
+        top: 640px;
+        left: 0px;
+        height: 200px;
+        width: 200px;
+        border: 1px solid red;
+        transform: skew(18deg);
+    }
+    #spot2{
+        position: absolute;
+        top: 620px;
+        left: 250px;
+        height: 200px;
+        width: 270px;
+        border: 1px solid red;
+        transform: skew(18deg);
+
+    }
+    #spot3{
+        position: absolute;
+        top: 600px;
+        left: 550px;
+        height: 200px;
+        width: 220px;
+        border: 1px solid red;
+        transform: skew(18deg);
+    }
+
+    #spot4{
+        position: absolute;
+        top: 590px;
+        left: 800px;
+        height: 200px;
+        width: 220px;
+        border: 1px solid red;
+        transform: skew(18deg);
+
+    }
+    #spot5{
+        position: absolute;
+        top: 600px;
+        left: 1100px;
+        height: 100px;
+        width: 250px;
+        border: 1px solid red;
+        transform: skew(25deg);
+
+    }
+    #spot6{
+        position: absolute;
+        top: 600px;
+        left: 1400px;
+        height: 100px;
+        width: 230px;
+        border: 1px solid red;
+        transform: skew(25deg);
+    }
+    #spot7{
+        position: absolute;
+        top: 600px;
+        left: 1650px;
+        height: 100px;
+        width: 230px;
+        border: 1px solid red;
+        transform: skew(25deg);
+    }
+
+
+</style>
