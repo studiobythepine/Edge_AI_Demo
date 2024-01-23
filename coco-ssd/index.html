@@ -38,15 +38,10 @@ var ctxo = overlay.getContext("2d");
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
-// var parkingData = document.getElementById("parkingBox");
-// var ctxP = canvas.getContext("2d");
-
 ctx.strokeStyle = "blue";
 ctx.lineWidth = 3;
 ctxo.strokeStyle = "blue";
 ctxo.lineWidth = 3;
-// ctxP.strokeStyle = "red";
-// ctxP.lineWidth = 3;
 
 const video = document.getElementById('video');
 
@@ -63,9 +58,7 @@ let parkingArea = {
     height: 200
 }
 
-// ctxP.strokeRect(0, 500, 1920, 200);
-
-
+//recursive function that runs the model and draws the bounding boxes
 async function runModel() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     let tempLocation
@@ -87,16 +80,12 @@ async function runModel() {
                 ctxo.strokeRect(prediction.bbox[0], prediction.bbox[1], prediction.bbox[2], prediction.bbox[3]);
             })
         });    
-
         ctxo.clearRect(0, 0, canvas.width, canvas.height);
         requestAnimationFrame(runModel);
-    
 }
 
-
-
-
-// setTimeout(runModel,  3000)
+//starts the application
+setTimeout(runModel,  3000)
 </script>
 
 
